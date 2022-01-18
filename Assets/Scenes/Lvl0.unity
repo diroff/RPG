@@ -2507,8 +2507,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 519420033}
-        m_TargetAssemblyTypeName: Regen, Assembly-CSharp
+      - m_Target: {fileID: 519420032}
+        m_TargetAssemblyTypeName: attackScript, Assembly-CSharp
         m_MethodName: onClickRegen
         m_Mode: 1
         m_Arguments:

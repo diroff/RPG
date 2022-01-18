@@ -210,9 +210,7 @@ public class attackScript : MonoBehaviour
         }
     }
     // События
-    // События
-    // События
-    // События
+   
     public void BuyClickHill() //покупка хилки
     {
         if (playerScript.money >= 10)
@@ -242,7 +240,7 @@ public class attackScript : MonoBehaviour
             }
         }
     }
-    public void SuicideClick()
+    public void SuicideClick() //суесыд
     {
         playerScript.hp = 0;
     }
@@ -305,7 +303,7 @@ public class attackScript : MonoBehaviour
             }
         }
     }
-    public void leaveClick()
+    public void leaveClick() //побег
     {
         leaveCh = Random.Range(1, 30);
         if (leaveCh - enemyScript.lvlEn > 0)
@@ -320,17 +318,26 @@ public class attackScript : MonoBehaviour
             dam.text = "Побег не удался!";
             StartCoroutine(Defense());
         }
-        
-
     }
-    public IEnumerator Attack()
+
+    public void onClickRegen() //хилл
+    {
+        attackScript.hpLast = (int)playerScript.hp;
+        playerScript.hp = playerScript.hpMax;
+        playerScript.hilka -= 1;
+        GetComponent<attackScript>().clickTextPool[0].StartMotionHp(playerScript.hpMax - attackScript.hpLast);
+        GetComponent<attackScript>().dam.text = "Вы восстановили своё здоровье";
+        if (enemyScript.hpEn >= 0)
+        StartCoroutine(GetComponent<attackScript>().Defense());
+ 
+    }
+    public IEnumerator Attack() //атака врага
     {
         enhpBarShab.gameObject.SetActive(true);
         leaveBt.gameObject.SetActive(false);
         enemyScript.hpEn -= (playerScript.dam + damBon);
         dam.text = "Вы нанесли " + (playerScript.dam + damBon).ToString() + " урона!";
         clickTextPoolEn[0].StartMotion(playerScript.dam + damBon);
-        
         sound.PlayOneShot(damS);
         if (enemyScript.hpEn <= 0)
         {
@@ -346,10 +353,9 @@ public class attackScript : MonoBehaviour
             StartCoroutine(Defense());
         }
     }
-
-    public IEnumerator enemyDead()
+    public IEnumerator enemyDead() //событие смерти врага
     {
-        if (isLeave == false)
+        if (isLeave == false) //когда враг умер
         { 
             enCur.GetComponent<Animation>().Play("dead");
             namEn.text = "";
@@ -376,7 +382,6 @@ public class attackScript : MonoBehaviour
                 {
                     damLast = (playerScript.dam);
                     hpLast = (int)playerScript.hp;
-
                     sound.PlayOneShot(coinS);
                     playerScript.lvl++;
                     playerScript.lvlNext = playerScript.lvl * (25 * playerScript.lvl);
@@ -391,7 +396,7 @@ public class attackScript : MonoBehaviour
                     sound.PlayOneShot(deadS);
                 }
         }
-        else
+        else //когда гг сбежал
         {
             enCur.GetComponent<Animation>().Play("dead");
             namEn.text = "";
@@ -416,14 +421,13 @@ public class attackScript : MonoBehaviour
         inShop = false;
         attack.gameObject.SetActive(false);
         hill.gameObject.SetActive(false);
+        leaveBt.gameObject.SetActive(false);
         yield return new WaitForSeconds(0.5f);
         sound.PlayOneShot(damS);
         enemyScript.damEn = (enemyScript.lvlEn * 5);
         damBon = Random.Range(-5, 5);
         playerScript.hp -= (enemyScript.damEn + damBon);
-
         clickTextPool[0].StartMotion(enemyScript.damEn + damBon); 
-        
         dam.text = "Враг нанес " + (enemyScript.damEn + damBon).ToString() + " урона!";
         attack.GetComponentInChildren<Image>().sprite = butFig;
         etFig = 1;
@@ -474,11 +478,11 @@ public class attackScript : MonoBehaviour
             }
             if (playerScript.money >= 10 && enNumb == 7)
             {
-                enNumb = Random.Range(1, 8);
+                enNumb = Random.Range(1, 7);
             }
             if (playerScript.hp == playerScript.hpMax && enNumb == 10)
             {
-                enNumb = Random.Range(1, 11);
+                enNumb = Random.Range(1, 10);
             }
         }
         switch (enNumb)
@@ -561,7 +565,7 @@ public class attackScript : MonoBehaviour
             case 11:
                 enemyScript.hpEnmax = 165;
                 enemyScript.hpEn = enemyScript.hpEnmax;
-                enemyScript.lvlEn = 8;
+                enemyScript.lvlEn = 9;
                 namEn.text = "Сокол (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im9;
                 enemyScript.item = false;
@@ -569,7 +573,7 @@ public class attackScript : MonoBehaviour
             case 12:
                 enemyScript.hpEnmax = 235;
                 enemyScript.hpEn = enemyScript.hpEnmax;
-                enemyScript.lvlEn = 11;
+                enemyScript.lvlEn = 12;
                 namEn.text = "Волк (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im9;
                 enemyScript.item = false;
