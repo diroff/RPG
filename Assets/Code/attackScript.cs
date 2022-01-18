@@ -476,7 +476,7 @@ public class attackScript : MonoBehaviour
             {
                 enNumb = Random.Range(1, 16);
             }
-            if (playerScript.money >= 10 && enNumb == 7)
+            if (playerScript.money <= 10 && enNumb == 7)
             {
                 enNumb = Random.Range(1, 7);
             }
