@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class enemyScript : MonoBehaviour
 {
     public static int  lvlEn = 1;
-    public static float hpEn = hpEnmax, damEn = (lvlEn * 5), hpEnmax = 10;
+    public static float hpEn = hpEnmax, damEn = (lvlEn * 5), hpEnmax = 10, damag;
     public static bool item = false;
     public Text enemyTextHp;
     private void Start()
