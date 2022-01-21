@@ -7,21 +7,24 @@ public class attackScript : MonoBehaviour
 {
     public Button hill, attack, exit, shopHil, shopDam, shopArm, leaveBt;
     public static bool inShop = false, isLeave;
-    public static int etFig = 1, damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK;
+    public static int etFig = 1, damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK, Score, costDam, costHill, costArm;
     public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar;
-    public Text dam, GGname, namEn, hpBarVal, EnhpBarVal, xpBarVal, hilkaVal, lvlVal,lvlValNext, damVal, moneyVal;
+    public Text dam, GGname, namEn, hpBarVal, EnhpBarVal, xpBarVal, hilkaVal, lvlVal,lvlValNext, damVal, moneyVal, ScoreText, costDamText, costArmText, costHillText;
     public Sprite im1, im2, im3, imCur, im4, im5, im6, im7, im8, im9, im10, shop, dead, butFig, butHil, butCon, clear;
     public AudioSource sound;
     public AudioClip damS, deadS, coinS;
     public static int enNumb = 1;
     public GameObject clickParent, damPrefab, damPrefabEn, clickParentEn, moneyParent, damParent, hilkaParent;
-    public moveText[] clickTextPool = new moveText[1];
-    private moveText[] clickTextPoolEn = new moveText[1];
+    public moveText[] clickTextPool = new moveText[10];
+    private moveText[] clickTextPoolEn = new moveText[10];
     private moveText[] clickTextHilka = new moveText[10];
     private moveText[] clickTextMoney = new moveText[10];
     private moveText[] clickTextDam = new moveText[10];
     private void Start()
     {
+        costArm = 20; costDam = 25; costHill = 10;
+        Score = 0;
+        xpK = 1;
         enemyScript.damag = 1;
         playerScript.hp = 20;
         playerScript.lvl = 1;
@@ -87,6 +90,7 @@ public class attackScript : MonoBehaviour
     private void Update() //обновление нужных переменных
     {
         
+        ScoreText.text = Score.ToString();
         xpBar.fillAmount = playerScript.xp / playerScript.lvlNext;
         xpBarVal.text = playerScript.xp.ToString() + "/" + playerScript.lvlNext.ToString() + " опыта";
         playerScript.hpMax = (20 * playerScript.lvl) + playerScript.armor;
@@ -100,6 +104,28 @@ public class attackScript : MonoBehaviour
         lvlVal.text = playerScript.lvl.ToString();
         lvlValNext.text = (playerScript.lvl + 1).ToString();
         damVal.text = (playerScript.dam - playerScript.damBonus).ToString();
+        costHill = playerScript.lvl * 10;
+        costDam =  playerScript.lvl * 25;
+        costArm =  playerScript.lvl * 20;
+        costHillText.text = costHill.ToString();
+        costDamText.text = costDam.ToString();
+        costArmText.text = costArm.ToString();
+
+        if (inShop == false)
+        {
+            shopHil.gameObject.SetActive(false);
+            shopArm.gameObject.SetActive(false);
+            shopDam.gameObject.SetActive(false);
+        }
+        if (inShop == true)
+        {
+            if (playerScript.money > costHill) shopHil.gameObject.SetActive(true);
+            else shopHil.gameObject.SetActive(false);
+            if (playerScript.money > costDam) shopDam.gameObject.SetActive(true);
+            else shopDam.gameObject.SetActive(false);
+            if (playerScript.money > costArm) shopArm.gameObject.SetActive(true);
+            else shopArm.gameObject.SetActive(false);
+        }
     }
     public void clickExitGame()
     {
@@ -119,7 +145,7 @@ public class attackScript : MonoBehaviour
                 StartCoroutine(Attack());
                 break;
             case 2: //выбор следующего события (врага)
-
+                    inShop = false;
                     StartCoroutine(RandomEnent());
                     prevEn = enNumb;
 
@@ -151,7 +177,6 @@ public class attackScript : MonoBehaviour
                         dam.text = "Ты нашёл новый кинжал! (+" + randBon.ToString() + " урона)";
                         playerScript.dam = (10 * playerScript.lvl) + playerScript.damBonus + playerScript.damWea;
                         clickTextDam[0].StartMotionXp(randBon);
-                        GameCount++;
                         etFig = 2;
                         break;
                     case 4:
@@ -160,7 +185,6 @@ public class attackScript : MonoBehaviour
                         playerScript.hp += randBon;
                         dam.text = "Ты нашёл кусочек кожи! (+" + randBon.ToString() + " защиты)";
                         clickTextPool[0].StartMotionHp(randBon);
-                        GameCount++;
                         etFig = 2;
                         break;
                     case 5:
@@ -168,36 +192,18 @@ public class attackScript : MonoBehaviour
                         playerScript.hilka += 1;
                         dam.text = "Ты нашёл пузырёк!";
                         clickTextHilka[0].StartMotionXp(1); 
-                        GameCount++;
                         etFig = 2;
                         break;
                     case 7:
                         hill.gameObject.SetActive(false);
                         dam.text = "Ты встретил торговца! Его предложения ниже.";
-                        if (playerScript.money >= 20)
-                        {
-                            shopHil.gameObject.SetActive(true);
-                            shopArm.gameObject.SetActive(true);
-                            shopDam.gameObject.SetActive(true);
-                        }
-                        else if(playerScript.money >= 10 && playerScript.money < 20)
-                        {
-                            shopHil.gameObject.SetActive(true);
-                        }
-                        else
-                        {
-                            shopHil.gameObject.SetActive(false);
-                            shopArm.gameObject.SetActive(false);
-                            shopDam.gameObject.SetActive(false);
-                        }
-                        GameCount++;
+                        inShop = true;
                         etFig = 2;
                         break;
                     case 10:
                         hill.gameObject.SetActive(false);
                         playerScript.hp = playerScript.hpMax;
                         dam.text = "Ты обнаружил место силы! Твоё здоровье восполнено до максимума.";
-                        GameCount++;
                         etFig = 2;
                         break;
                     default:
@@ -215,94 +221,36 @@ public class attackScript : MonoBehaviour
    
     public void BuyClickHill() //покупка хилки
     {
-        if (playerScript.money >= 10)
+        if (playerScript.money >= costHill)
         {
-            playerScript.money -= 10;
+            playerScript.money -= costHill;
             playerScript.hilka++;
             sound.PlayOneShot(coinS);
             dam.text = "Вы успешно купили хилку!";
             clickTextHilka[0].StartMotionXp(1);
-            if (playerScript.money >= 20)
-            {
-                shopHil.gameObject.SetActive(true);
-                shopArm.gameObject.SetActive(true);
-                shopDam.gameObject.SetActive(true);
-            }
-            else if (playerScript.money >= 10 && playerScript.money < 20)
-            {
-                shopHil.gameObject.SetActive(true);
-                shopArm.gameObject.SetActive(false);
-                shopDam.gameObject.SetActive(false);
-            }
-            else
-            {
-                shopHil.gameObject.SetActive(false);
-                shopArm.gameObject.SetActive(false);
-                shopDam.gameObject.SetActive(false);
-            }
         }
-    }
-    public void SuicideClick() //суесыд
-    {
-        playerScript.hp = 0;
     }
     public void BuyClickDam() //покупка урона
     {
-        if (playerScript.money >= 20)
+        if (playerScript.money >= costDam)
         {
             sound.PlayOneShot(coinS);
-            playerScript.money -= 20;
+            playerScript.money -= costDam;
             playerScript.damWea += 10;
             dam.text = "Вы успешно купили кинжал! Урон увеличен на 10.";
             clickTextDam[0].StartMotionXp(10);
-            if (playerScript.money >= 20)
-            {
-                shopHil.gameObject.SetActive(true);
-                shopArm.gameObject.SetActive(true);
-                shopDam.gameObject.SetActive(true);
-            }
-            else if (playerScript.money >= 10 && playerScript.money < 20)
-            {
-                shopHil.gameObject.SetActive(true);
-                shopArm.gameObject.SetActive(false);
-                shopDam.gameObject.SetActive(false);
-            }
-            else
-            {
-                shopHil.gameObject.SetActive(false);
-                shopArm.gameObject.SetActive(false);
-                shopDam.gameObject.SetActive(false);
-            }
         }
     }
     public void BuyClickArmor() //покупка брони
     {
-        if (playerScript.money >= 20)
+        if (playerScript.money >= costArm)
         {
             sound.PlayOneShot(coinS);
-            playerScript.money -= 20;
+            playerScript.money -= costArm;
             playerScript.armor += 10;
             playerScript.hp += 10;
             clickTextPool[0].StartMotionHp(10);
             dam.text = "Вы успешно купили кусочек кожи! Защита увеличена на 10.";
-            if (playerScript.money >= 20)
-            {
-                shopHil.gameObject.SetActive(true);
-                shopArm.gameObject.SetActive(true);
-                shopDam.gameObject.SetActive(true);
-            }
-            else if (playerScript.money >= 10 && playerScript.money < 20)
-            {
-                shopHil.gameObject.SetActive(true);
-                shopArm.gameObject.SetActive(false);
-                shopDam.gameObject.SetActive(false);
-            }
-            else
-            {
-                shopHil.gameObject.SetActive(false);
-                shopArm.gameObject.SetActive(false);
-                shopDam.gameObject.SetActive(false);
-            }
         }
     }
     public void leaveClick() //побег
@@ -367,11 +315,12 @@ public class attackScript : MonoBehaviour
             leaveBt.gameObject.SetActive(false);
             yield return new WaitForSeconds(1.0f);
             attack.gameObject.SetActive(true);
-            randMoney = UnityEngine.Random.Range((-4 * enemyScript.lvlEn), (5 * enemyScript.lvlEn));
-            moneyBon = (5 * enemyScript.lvlEn) + randMoney;
+            randMoney = UnityEngine.Random.Range((-4 * xpK), (5 * xpK));
+            moneyBon = (5 * xpK) + randMoney + enemyScript.lvlEn;
             enhpBarShab.gameObject.SetActive(false);
             yield return new WaitForSeconds(0.0001f);
-            xpBon = (enemyScript.lvlEn+xpK) * 5;
+            xpBon = xpK * 5 + enemyScript.lvlEn * 2;
+            Score += (xpK * 5 + enemyScript.lvlEn * 2);
             attack.GetComponentInChildren<Image>().sprite = butCon;
             playerScript.xp += xpBon;
             playerScript.money += moneyBon;
@@ -379,17 +328,19 @@ public class attackScript : MonoBehaviour
             enCur.color = new Color(255, 255, 255, 255);
             dam.text = $"Противник уничтожен! Вы получили {xpBon} опыта и {moneyBon} монет.";
             enCur.sprite = dead;
-            GameCount++;
                 if (playerScript.xp >= playerScript.lvlNext)
                 {
-                    damLast = (playerScript.dam);
-                    hpLast = (int)playerScript.hp;
-                    sound.PlayOneShot(coinS);
-                    playerScript.lvl++;
-                    playerScript.lvlNext = playerScript.lvl * (25 * playerScript.lvl);
-                    playerScript.hpMax = (playerScript.lvl * 20) + playerScript.armor;
-                    playerScript.hp = playerScript.hpMax;
-                    playerScript.dam = (10 * playerScript.lvl) + playerScript.damBonus;
+                
+                damLast = (playerScript.dam);
+                hpLast = (int)playerScript.hp;
+                sound.PlayOneShot(coinS);
+                playerScript.lvl++;
+                playerScript.xp -= playerScript.lvlNext;
+                playerScript.lvlNext = playerScript.lvl * (25 * playerScript.lvl);
+                playerScript.hpMax = (playerScript.lvl * 20) + playerScript.armor;
+                playerScript.hp = playerScript.hpMax;
+                playerScript.dam = (10 * playerScript.lvl) + playerScript.damBonus;
+                                   
                     clickTextPool[0].StartMotionHp(playerScript.hpMax - hpLast);
                     clickTextDam[0].StartMotionXp(playerScript.dam - damLast);
                 }
@@ -414,7 +365,6 @@ public class attackScript : MonoBehaviour
             enCur.color = new Color(255, 255, 255, 255);
             dam.text = "Вы успешно убежали!";
             enCur.sprite = clear;
-            GameCount++;
 
         }
     }
@@ -454,31 +404,35 @@ public class attackScript : MonoBehaviour
         enCur.color = new Color(255, 255, 255, 255);
         while (enNumb == prevEn) 
         {
-            if (GameCount < 5)
+            if (playerScript.lvl < 2)
             {
                 enNumb = UnityEngine.Random.Range(1, 4);
             }
-            else if (GameCount >= 5 && GameCount < 10)
+            else if (playerScript.lvl >= 2 && playerScript.lvl < 4)
             {
                 enNumb = UnityEngine.Random.Range(1, 8);
             }
-            else if (GameCount >= 10 && GameCount < 30)
+            else if (playerScript.lvl >= 4 && playerScript.lvl < 6)
             {
                 enNumb = UnityEngine.Random.Range(1, 11);
             }
-            else if (GameCount >= 30 && GameCount < 50)
+            else if (playerScript.lvl >= 6 && playerScript.lvl < 7)
             {
                 enNumb = UnityEngine.Random.Range(1, 13);
             }
-            else if (GameCount >= 50 && GameCount < 85)
+            else if (playerScript.lvl >= 7 && playerScript.lvl < 8)
+            {
+                enNumb = UnityEngine.Random.Range(1, 14);
+            }
+            else if (playerScript.lvl >= 8 && playerScript.lvl < 10)
             {
                 enNumb = UnityEngine.Random.Range(1, 15);
             }
-            else if (GameCount >= 85)
+            else if (playerScript.lvl >= 10)
             {
                 enNumb = UnityEngine.Random.Range(1, 16);
             }
-            if (playerScript.money <= 10 && enNumb == 7)
+            if (playerScript.money <= costHill && enNumb == 7)
             {
                 enNumb = UnityEngine.Random.Range(1, 7);
             }
@@ -512,7 +466,7 @@ public class attackScript : MonoBehaviour
             case 2:
                 if (playerScript.lvl >= 2)
                 {
-                    enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl - 1, playerScript.lvl + 2);
+                    enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl, playerScript.lvl + 2);
                 }
                 else
                 {
@@ -520,7 +474,7 @@ public class attackScript : MonoBehaviour
                 }
                 xpK = 2;
                 hpEnBon = 5 * enemyScript.lvlEn;
-                enemyScript.damag = 4;
+                enemyScript.damag = 5;
                 enemyScript.hpEnmax = 10 + hpEnBon;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Жук (" + enemyScript.lvlEn.ToString() + " lvl)";
@@ -547,14 +501,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.item = true;
                 break;
             case 6:
-                if (playerScript.lvl >= 2)
-                {
-                    enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl - 1, playerScript.lvl + 2);
-                }
-                else
-                {
-                    enemyScript.lvlEn = 3;
-                }
+                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl - 1, playerScript.lvl + 2);
                 xpK = 3;
                 hpEnBon = 5 * enemyScript.lvlEn;
                 enemyScript.damag = 7;
@@ -574,32 +521,18 @@ public class attackScript : MonoBehaviour
                 inShop = true;
                 break;
             case 8:
-                if (playerScript.lvl >= 2)
-                {
-                    enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl - 1, playerScript.lvl + 3);
-                }
-                else
-                {
-                    enemyScript.lvlEn = 4;
-                }
+                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl - 1, playerScript.lvl + 3);
                 xpK = 4;
                 hpEnBon = 5 * enemyScript.lvlEn;
                 enemyScript.damag = 11;
-                enemyScript.hpEnmax = 25 + hpEnBon;
+                enemyScript.hpEnmax = 30 + hpEnBon;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Крот (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im7;
                 enemyScript.item = false;
                 break;
             case 9:
-                if (playerScript.lvl >= 2)
-                {
-                    enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl - 1, playerScript.lvl + 4);
-                }
-                else
-                {
-                    enemyScript.lvlEn = 5;
-                }
+                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl - 1, playerScript.lvl + 4);
                 xpK = 5;
                 hpEnBon = 5 * enemyScript.lvlEn;
                 enemyScript.damag = 16;
@@ -616,14 +549,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.item = true;
                 break;
             case 11:
-                if (playerScript.lvl >= 2)
-                {
-                    enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+2, playerScript.lvl + 4);
-                }
-                else
-                {
-                    enemyScript.lvlEn = 9;
-                }
+                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+2, playerScript.lvl + 4);
                 xpK = 6;
                 hpEnBon = 5 * enemyScript.lvlEn;
                 enemyScript.damag = 25;
@@ -635,13 +561,7 @@ public class attackScript : MonoBehaviour
                 break;
             case 12:
                 if (playerScript.lvl >= 2)
-                {
-                    enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl + 2, playerScript.lvl + 7);
-                }
-                else
-                {
-                    enemyScript.lvlEn = 12;
-                }
+                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl + 2, playerScript.lvl + 7);
                 xpK = 7;
                 hpEnBon = 5 * enemyScript.lvlEn;
                 enemyScript.damag = 30;
@@ -652,14 +572,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.item = false;
                 break;
             case 13:
-                if (playerScript.lvl >= 2)
-                {
-                    enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+3, playerScript.lvl + 8);
-                }
-                else
-                {
-                    enemyScript.lvlEn = 15;
-                }
+                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+3, playerScript.lvl + 8);
                 xpK = 8;
                 hpEnBon = 5 * enemyScript.lvlEn;
                 enemyScript.damag = 40;
@@ -670,14 +583,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.item = false;
                 break;
             case 14:
-                if (playerScript.lvl >= 2)
-                {
-                    enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+4, playerScript.lvl + 8);
-                }
-                else
-                {
-                    enemyScript.lvlEn = 18;
-                }
+                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+4, playerScript.lvl + 8);
                 xpK = 9;
                 hpEnBon = 5 * enemyScript.lvlEn;
                 enemyScript.damag = 75;
@@ -688,14 +594,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.item = false;
                 break;
             case 15:
-                if (playerScript.lvl >= 2)
-                {
-                    enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+5, playerScript.lvl + 12);
-                }
-                else
-                {
-                    enemyScript.lvlEn = 21;
-                }
+                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+5, playerScript.lvl + 12);
                 xpK = 10;
                 hpEnBon = 5 * enemyScript.lvlEn;
                 enemyScript.damag = 100;

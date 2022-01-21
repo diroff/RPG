@@ -10,13 +10,13 @@ public class Score : MonoBehaviour
 
     void Start()
     {
-        s2core.text = "Ваш счёт:" + playerScript.xp + " очков";
-        if (playerScript.xp > PlayerPrefs.GetInt("Place1"))
+        s2core.text = "Ваш счёт:" + attackScript.Score + " очков";
+        if (attackScript.Score > PlayerPrefs.GetInt("Place1"))
         {
             PromScore = PlayerPrefs.GetInt("Place1"); // предыдущее 1 место записывается в PromScore
             PromScoreStr = PlayerPrefs.GetString("Place1Str");
             /////////////////////////////////////////////////////////////////////////////////////////////////
-            PlayerPrefs.SetInt("Place1", (int)playerScript.xp); // текущее 1 место заполняется
+            PlayerPrefs.SetInt("Place1", attackScript.Score); // текущее 1 место заполняется
             PlayerPrefs.SetString("Place1Str", Name.ggName);
             //////////////////////////////////////////////////////////////////////////////////////////
             PromScore2 = PlayerPrefs.GetInt("Place2"); //2 место записывается в PromScore2
@@ -41,12 +41,12 @@ public class Score : MonoBehaviour
             PlayerPrefs.SetString("Place5Str", PromScoreStr2);
             PlayerPrefs.Save();
         }
-        else if ((playerScript.xp > PlayerPrefs.GetInt("Place2"))) 
+        else if ((attackScript.Score > PlayerPrefs.GetInt("Place2"))) 
         {
             PromScore2 = PlayerPrefs.GetInt("Place2"); //2 место записывается в PromScore2
             PromScoreStr2 = PlayerPrefs.GetString("Place2Str");
 
-            PlayerPrefs.SetInt("Place2", (int)playerScript.xp); //значение playerScript.xp передается во 2 место'
+            PlayerPrefs.SetInt("Place2", attackScript.Score); //значение playerScript.xp передается во 2 место'
             PlayerPrefs.SetString("Place2Str", Name.ggName);
 
             PromScore = PlayerPrefs.GetInt("Place3"); //значение 3 места записывается в PromScore
@@ -65,12 +65,12 @@ public class Score : MonoBehaviour
             PlayerPrefs.SetString("Place5Str", PromScoreStr2);
             PlayerPrefs.Save();
         }
-        else if ((playerScript.xp > PlayerPrefs.GetInt("Place3")))
+        else if ((attackScript.Score > PlayerPrefs.GetInt("Place3")))
         {
             PromScore = PlayerPrefs.GetInt("Place3"); //значение 3 места записывается в PromScore
             PromScoreStr = PlayerPrefs.GetString("Place3Str");
 
-            PlayerPrefs.SetInt("Place3", (int)playerScript.xp); //playerScript.xp записывается в 3 место
+            PlayerPrefs.SetInt("Place3", attackScript.Score); //playerScript.xp записывается в 3 место
             PlayerPrefs.SetString("Place3Str", Name.ggName);
 
             PromScore2 = PlayerPrefs.GetInt("Place4"); //значение 4 места записывается в Promscore2
@@ -85,21 +85,21 @@ public class Score : MonoBehaviour
         }
 
 
-        else if ((playerScript.xp > PlayerPrefs.GetInt("Place4")))
+        else if ((attackScript.Score > PlayerPrefs.GetInt("Place4")))
         {
             PromScore2 = PlayerPrefs.GetInt("Place4"); //значение playerScript.xp места записывается в Promscore2
             PromScoreStr2 = PlayerPrefs.GetString("Place4Str");
 
-            PlayerPrefs.SetInt("Place4", (int)playerScript.xp); //PromScore записывается на 4 место
+            PlayerPrefs.SetInt("Place4", attackScript.Score); //PromScore записывается на 4 место
             PlayerPrefs.SetString("Place4Str", Name.ggName);
 
             PlayerPrefs.SetInt("Place5", PromScore2); // PromScore2 записывается на 5 место
             PlayerPrefs.SetString("Place5Str", PromScoreStr2);
             PlayerPrefs.Save();
         }
-        else if ((playerScript.xp > PlayerPrefs.GetInt("Place5")))
+        else if ((attackScript.Score > PlayerPrefs.GetInt("Place5")))
         {
-            PlayerPrefs.SetInt("Place5", (int)playerScript.xp);
+            PlayerPrefs.SetInt("Place5", attackScript.Score);
             PlayerPrefs.SetString("Place5Str", Name.ggName);
             PlayerPrefs.Save();
         }
