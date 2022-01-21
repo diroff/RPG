@@ -7,7 +7,7 @@ public class attackScript : MonoBehaviour
 {
     public Button hill, attack, exit, shopHil, shopDam, shopArm, leaveBt;
     public static bool inShop = false, isLeave;
-    public static int etFig = 1, damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK, Score, costDam, costHill, costArm;
+    public static int etFig = 1, damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK, Score, costDam, costHill, costArm, leaveCount;
     public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar;
     public Text dam, GGname, namEn, hpBarVal, EnhpBarVal, xpBarVal, hilkaVal, lvlVal,lvlValNext, damVal, moneyVal, ScoreText, costDamText, costArmText, costHillText;
     public Sprite im1, im2, im3, imCur, im4, im5, im6, im7, im8, im9, im10, shop, dead, butFig, butHil, butCon, clear;
@@ -22,6 +22,7 @@ public class attackScript : MonoBehaviour
     private moveText[] clickTextDam = new moveText[10];
     private void Start()
     {
+        
         costArm = 20; costDam = 25; costHill = 10;
         Score = 0;
         xpK = 1;
@@ -37,6 +38,7 @@ public class attackScript : MonoBehaviour
         enemyScript.hpEn = enemyScript.hpEnmax;
         enemyScript.lvlEn = 1;
         enemyScript.damEn = (enemyScript.damag * enemyScript.lvlEn);
+        leaveCount = 25 + playerScript.lvl;
         inShop = false;
         leaveBt.gameObject.SetActive(false);
         shopHil.gameObject.SetActive(false);
@@ -110,7 +112,6 @@ public class attackScript : MonoBehaviour
         costHillText.text = costHill.ToString();
         costDamText.text = costDam.ToString();
         costArmText.text = costArm.ToString();
-
         if (inShop == false)
         {
             shopHil.gameObject.SetActive(false);
@@ -255,13 +256,14 @@ public class attackScript : MonoBehaviour
     }
     public void leaveClick() //побег
     {
-        leaveCh = UnityEngine.Random.Range(1, 30);
-        if (leaveCh - enemyScript.lvlEn > 0)
+        leaveCh = UnityEngine.Random.Range(1, leaveCount);
+        if (leaveCh - enemyScript.lvlEn - xpK > 0)
         {
             isLeave = true;
             enNumb = prevEn;
             StartCoroutine(enemyDead());
             etFig = 2;
+            leaveCount--;
         }
         else
         {
@@ -330,11 +332,11 @@ public class attackScript : MonoBehaviour
             enCur.sprite = dead;
                 if (playerScript.xp >= playerScript.lvlNext)
                 {
-                
                 damLast = (playerScript.dam);
                 hpLast = (int)playerScript.hp;
                 sound.PlayOneShot(coinS);
                 playerScript.lvl++;
+                leaveCount = 25 + playerScript.lvl;
                 playerScript.xp -= playerScript.lvlNext;
                 playerScript.lvlNext = playerScript.lvl * (25 * playerScript.lvl);
                 playerScript.hpMax = (playerScript.lvl * 20) + playerScript.armor;
