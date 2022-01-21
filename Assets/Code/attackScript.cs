@@ -25,7 +25,7 @@ public class attackScript : MonoBehaviour
         costArm = 20; costDam = 25; costHill = 10;
         Score = 0;
         xpK = 1;
-        enemyScript.damag = 1;
+        enemyScript.damag = 3;
         playerScript.hp = 20;
         playerScript.lvl = 1;
         playerScript.lvlNext = 10;
@@ -36,7 +36,7 @@ public class attackScript : MonoBehaviour
         enemyScript.hpEnmax = 10;
         enemyScript.hpEn = enemyScript.hpEnmax;
         enemyScript.lvlEn = 1;
-        enemyScript.damEn = enemyScript.damag * (enemyScript.lvlEn * 5);
+        enemyScript.damEn = (enemyScript.damag * enemyScript.lvlEn);
         inShop = false;
         leaveBt.gameObject.SetActive(false);
         shopHil.gameObject.SetActive(false);
@@ -376,7 +376,7 @@ public class attackScript : MonoBehaviour
         leaveBt.gameObject.SetActive(false);
         yield return new WaitForSeconds(0.5f);
         sound.PlayOneShot(damS);
-        enemyScript.damEn = enemyScript.damag + (enemyScript.lvlEn * 5);
+        enemyScript.damEn = (enemyScript.damag * enemyScript.lvlEn);
         damBon = UnityEngine.Random.Range(-5, 5);
         playerScript.hp -= (enemyScript.damEn + damBon);
         clickTextPool[0].StartMotion(enemyScript.damEn + damBon); 
@@ -444,18 +444,11 @@ public class attackScript : MonoBehaviour
         switch (enNumb)
         {
             case 1:
-                if (playerScript.lvl >= 2)
-                {
-                    enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl, playerScript.lvl+2);
-                }
-                else
-                {
-                    enemyScript.lvlEn = 1;
-                }
+                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl, playerScript.lvl+2);
                 xpK = 1;
                 hpEnBon = 5 * enemyScript.lvlEn;
-                enemyScript.damag = 5;
-                enemyScript.hpEnmax = 5 + hpEnBon;
+                enemyScript.damag = 3;
+                enemyScript.hpEnmax = 10 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Комар (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im1;
@@ -470,12 +463,12 @@ public class attackScript : MonoBehaviour
                 }
                 else
                 {
-                    enemyScript.lvlEn = 2;
+                    enemyScript.lvlEn = 1;
                 }
                 xpK = 2;
                 hpEnBon = 5 * enemyScript.lvlEn;
-                enemyScript.damag = 5;
-                enemyScript.hpEnmax = 10 + hpEnBon;
+                enemyScript.damag = 4;
+                enemyScript.hpEnmax = 15 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Жук (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im2;
@@ -501,11 +494,11 @@ public class attackScript : MonoBehaviour
                 enemyScript.item = true;
                 break;
             case 6:
-                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl - 1, playerScript.lvl + 2);
+                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl - 1, playerScript.lvl + 3);
                 xpK = 3;
                 hpEnBon = 5 * enemyScript.lvlEn;
-                enemyScript.damag = 7;
-                enemyScript.hpEnmax = 25 + hpEnBon;
+                enemyScript.damag = 5;
+                enemyScript.hpEnmax = 30 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Жаба (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im6;
@@ -521,11 +514,11 @@ public class attackScript : MonoBehaviour
                 inShop = true;
                 break;
             case 8:
-                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl - 1, playerScript.lvl + 3);
+                enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl, playerScript.lvl + 3);
                 xpK = 4;
                 hpEnBon = 5 * enemyScript.lvlEn;
-                enemyScript.damag = 11;
-                enemyScript.hpEnmax = 30 + hpEnBon;
+                enemyScript.damag = 6;
+                enemyScript.hpEnmax = 40 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Крот (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im7;
@@ -535,8 +528,8 @@ public class attackScript : MonoBehaviour
                 enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl - 1, playerScript.lvl + 4);
                 xpK = 5;
                 hpEnBon = 5 * enemyScript.lvlEn;
-                enemyScript.damag = 16;
-                enemyScript.hpEnmax = 50 + hpEnBon;
+                enemyScript.damag = 6;
+                enemyScript.hpEnmax = 50 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Голубь (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im8;
@@ -552,8 +545,8 @@ public class attackScript : MonoBehaviour
                 enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+2, playerScript.lvl + 4);
                 xpK = 6;
                 hpEnBon = 5 * enemyScript.lvlEn;
-                enemyScript.damag = 25;
-                enemyScript.hpEnmax = 115 + hpEnBon;
+                enemyScript.damag = 7;
+                enemyScript.hpEnmax = 60 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Сокол (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im9;
@@ -564,8 +557,8 @@ public class attackScript : MonoBehaviour
                 enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl + 2, playerScript.lvl + 7);
                 xpK = 7;
                 hpEnBon = 5 * enemyScript.lvlEn;
-                enemyScript.damag = 30;
-                enemyScript.hpEnmax = 195 + hpEnBon;
+                enemyScript.damag = 6;
+                enemyScript.hpEnmax = 70 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Волк (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im9;
@@ -575,8 +568,8 @@ public class attackScript : MonoBehaviour
                 enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+3, playerScript.lvl + 8);
                 xpK = 8;
                 hpEnBon = 5 * enemyScript.lvlEn;
-                enemyScript.damag = 40;
-                enemyScript.hpEnmax = 425 + hpEnBon;
+                enemyScript.damag = 6;
+                enemyScript.hpEnmax = 100 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Рысь (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im9;
@@ -586,8 +579,8 @@ public class attackScript : MonoBehaviour
                 enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+4, playerScript.lvl + 8);
                 xpK = 9;
                 hpEnBon = 5 * enemyScript.lvlEn;
-                enemyScript.damag = 75;
-                enemyScript.hpEnmax = 650 + hpEnBon;
+                enemyScript.damag = 8;
+                enemyScript.hpEnmax = 125 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Тигр (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im9;
@@ -597,8 +590,8 @@ public class attackScript : MonoBehaviour
                 enemyScript.lvlEn = UnityEngine.Random.Range(playerScript.lvl+5, playerScript.lvl + 12);
                 xpK = 10;
                 hpEnBon = 5 * enemyScript.lvlEn;
-                enemyScript.damag = 100;
-                enemyScript.hpEnmax = 900 + hpEnBon;
+                enemyScript.damag = 200;
+                enemyScript.hpEnmax = 200 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax; 
                 namEn.text = "Лев (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im9;
