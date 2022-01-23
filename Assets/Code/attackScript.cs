@@ -378,11 +378,19 @@ public class attackScript : MonoBehaviour
         leaveBt.gameObject.SetActive(false);
         yield return new WaitForSeconds(0.5f);
         sound.PlayOneShot(damS);
-        enemyScript.damEn = (enemyScript.damag * enemyScript.lvlEn);
         damBon = UnityEngine.Random.Range(-5, 5);
-        playerScript.hp -= (enemyScript.damEn + damBon);
-        clickTextPool[0].StartMotion(enemyScript.damEn + damBon); 
-        dam.text = "Враг нанес " + (enemyScript.damEn + damBon).ToString() + " урона!";
+        enemyScript.damEn = (enemyScript.damag * enemyScript.lvlEn) + damBon;
+        if (enemyScript.damEn <= 0)
+        {
+            enemyScript.damEn = 0;
+            dam.text = "Промах!";
+        }
+        else
+        {
+        playerScript.hp -= enemyScript.damEn;
+        clickTextPool[0].StartMotion(enemyScript.damEn); 
+        dam.text = "Враг нанес " + (enemyScript.damEn).ToString() + " урона!";
+        }
         attack.GetComponentInChildren<Image>().sprite = butFig;
         etFig = 1;
         yield return new WaitForSeconds(1f);

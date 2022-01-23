@@ -16,7 +16,7 @@ public class moveText : MonoBehaviour
     {
 
         transform.localPosition = Vector2.zero;
-        GetComponent<Text>().text = "-" + damValue + " hp";
+        GetComponent<Text>().text = "-" + damValue;
         moveVector = new Vector2(0, 2);
         move = true;
         GetComponent<Animation>().Play();
