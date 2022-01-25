@@ -5,15 +5,17 @@ using UnityEngine.UI;
 using System;
 public class attackScript : MonoBehaviour
 {
-    public Button hill, attack, exit, shopHil, shopDam, shopArm, leaveBt;
-    public static bool inShop = false, isLeave;
+    public Button hill, attack, exit, shopHil, shopDam, shopArm, leaveBt, fightMiniGameBt;
+    public static bool inShop = false, isLeave, isClickFight;
     public static int etFig = 1, damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK, Score, costDam, costHill, costArm, leaveCount;
-    public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar;
+    public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar, powerDam, powerDamSlider;
     public Text dam, GGname, namEn, hpBarVal, EnhpBarVal, xpBarVal, hilkaVal, lvlVal,lvlValNext, damVal, moneyVal, ScoreText, costDamText, costArmText, costHillText;
     public Sprite im1, im2, im3, imCur, im4, im5, im6, im7, im8, im9, im10, shop, dead, butFig, butHil, butCon, clear;
+    public Vector2 direction;
     public AudioSource sound;
     public AudioClip damS, deadS, coinS;
     public static int enNumb = 1;
+    public float startDistance, damBonMinigame, speedMove;
     public GameObject clickParent, damPrefab, damPrefabEn, clickParentEn, moneyParent, damParent, hilkaParent;
     public moveText[] clickTextPool = new moveText[10];
     private moveText[] clickTextPoolEn = new moveText[10];
@@ -22,7 +24,9 @@ public class attackScript : MonoBehaviour
     private moveText[] clickTextDam = new moveText[10];
     private void Start()
     {
-        
+        fightMiniGameBt.gameObject.SetActive(false);
+        powerDam.gameObject.SetActive(false);
+        powerDamSlider.gameObject.SetActive(false);
         costArm = 20; costDam = 25; costHill = 10;
         Score = 0;
         xpK = 1;
@@ -277,20 +281,54 @@ public class attackScript : MonoBehaviour
         attackScript.hpLast = (int)playerScript.hp;
         playerScript.hp = playerScript.hpMax;
         playerScript.hilka -= 1;
-        GetComponent<attackScript>().clickTextPool[0].StartMotionHp(playerScript.hpMax - attackScript.hpLast);
-        GetComponent<attackScript>().dam.text = "Вы восстановили своё здоровье";
+        clickTextPool[0].StartMotionHp(playerScript.hpMax - attackScript.hpLast);
+        dam.text = "Вы восстановили своё здоровье";
         if (enemyScript.hpEn >= 0)
-        StartCoroutine(GetComponent<attackScript>().Defense());
+        StartCoroutine(Defense());
  
+    }
+    public void AttackMiniGameClick()
+    {
+        isClickFight = true;
     }
     public IEnumerator Attack() //атака 
     {
         enhpBarShab.gameObject.SetActive(true);
         leaveBt.gameObject.SetActive(false);
-        enemyScript.hpEn -= (playerScript.dam + damBon);
-        dam.text = "Вы нанесли " + (playerScript.dam + damBon).ToString() + " урона!";
-        clickTextPoolEn[0].StartMotion(playerScript.dam + damBon);
-        sound.PlayOneShot(damS);
+        attack.gameObject.SetActive(false);
+        powerDam.gameObject.SetActive(true);
+        powerDamSlider.gameObject.SetActive(true);
+        speedMove = 300 + UnityEngine.Random.Range(0, 15) + (15*xpK);
+        isClickFight = false;
+        startDistance = -250;
+        fightMiniGameBt.gameObject.SetActive(true);
+        while (startDistance <= 250 && isClickFight == false)
+        {
+            yield return new WaitForSeconds(0.0000001f);
+            startDistance += speedMove * Time.deltaTime;
+            powerDamSlider.gameObject.transform.localPosition = new Vector2(startDistance, 0);
+        }
+        fightMiniGameBt.gameObject.SetActive(false);
+        damBonMinigame = (int)startDistance;
+        yield return new WaitForSeconds(0.5f);
+        if ((startDistance >= -250 && startDistance < -150) || (startDistance >= 150)) damBonMinigame = UnityEngine.Random.Range(0, 0.3f);
+        if ((startDistance >= -150 && startDistance < -80) || (startDistance >= 80 && startDistance < 150)) damBonMinigame = UnityEngine.Random.Range(0.3f, 0.5f);
+        if ((startDistance >= -80 && startDistance < -20) ||  (startDistance >= 20 && startDistance < 80)) damBonMinigame = UnityEngine.Random.Range(0.5f, 0.99f);
+        if (startDistance >= -20 && startDistance < 20) damBonMinigame = UnityEngine.Random.Range(1f, 2.5f);
+        powerDam.gameObject.SetActive(false);
+        powerDamSlider.gameObject.SetActive(false);
+        if ((playerScript.dam + damBon) * damBonMinigame <= 0)
+        {
+            dam.text = "Промах!";
+        }
+        else
+        {
+            enemyScript.hpEn -= (playerScript.dam + damBon) * damBonMinigame;
+            dam.text = "Вы нанесли " + ((playerScript.dam + damBon) * damBonMinigame).ToString() + " урона! ";
+            clickTextPoolEn[0].StartMotion((playerScript.dam + damBon) * damBonMinigame);
+            sound.PlayOneShot(damS);
+        }
+        
         if (enemyScript.hpEn <= 0)
         {
             isLeave = false;
@@ -305,6 +343,7 @@ public class attackScript : MonoBehaviour
             StartCoroutine(Defense());
         }
     }
+ 
     public IEnumerator enemyDead() //событие смерти врага
     {
         if (isLeave == false) //когда враг умер
@@ -405,7 +444,11 @@ public class attackScript : MonoBehaviour
             hill.gameObject.SetActive(false);
         }
     }
-
+   
+        
+        
+        
+   
     public IEnumerator RandomEnent() //выбор рандомного противника (события)
     {
         shopHil.gameObject.SetActive(false);
