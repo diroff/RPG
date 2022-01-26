@@ -15,7 +15,7 @@ public class attackScript : MonoBehaviour
     public AudioSource sound;
     public AudioClip damS, deadS, coinS;
     public static int enNumb = 1;
-    public float startDistance, damBonMinigame, speedMove;
+    public float startDistance, damBonMinigame, speedMove, hpEnfl, hpFl;
     public GameObject clickParent, damPrefab, damPrefabEn, clickParentEn, moneyParent, damParent, hilkaParent;
     public moveText[] clickTextPool = new moveText[10];
     private moveText[] clickTextPoolEn = new moveText[10];
@@ -95,14 +95,15 @@ public class attackScript : MonoBehaviour
     }
     private void Update() //обновление нужных переменных
     {
-        
+        hpFl = playerScript.hp;
+        hpEnfl = enemyScript.hpEn;
         ScoreText.text = Score.ToString();
         xpBar.fillAmount = playerScript.xp / playerScript.lvlNext;
         xpBarVal.text = playerScript.xp.ToString() + "/" + playerScript.lvlNext.ToString() + " опыта";
         playerScript.hpMax = (20 * playerScript.lvl) + playerScript.armor;
         playerScript.dam = (10 * playerScript.lvl) + playerScript.damBonus + playerScript.damWea;
-        enhpBar.fillAmount = enemyScript.hpEn / enemyScript.hpEnmax;
-        hpBar.fillAmount = playerScript.hp / playerScript.hpMax;
+        enhpBar.fillAmount = hpEnfl / enemyScript.hpEnmax;
+        hpBar.fillAmount = hpFl / playerScript.hpMax;
         EnhpBarVal.text = enemyScript.hpEn.ToString() + "hp";
         hpBarVal.text = playerScript.hp.ToString() + " hp";
         moneyVal.text = playerScript.money.ToString();
@@ -110,9 +111,9 @@ public class attackScript : MonoBehaviour
         lvlVal.text = playerScript.lvl.ToString();
         lvlValNext.text = (playerScript.lvl + 1).ToString();
         damVal.text = (playerScript.dam - playerScript.damBonus).ToString();
-        costHill = playerScript.lvl * 10;
-        costDam =  playerScript.lvl * 25;
-        costArm =  playerScript.lvl * 20;
+        costHill = (playerScript.lvl-1) * 15;
+        costDam = (playerScript.lvl - 1) * 25;
+        costArm = (playerScript.lvl - 1) * 20;
         costHillText.text = costHill.ToString();
         costDamText.text = costDam.ToString();
         costArmText.text = costArm.ToString();
@@ -317,15 +318,15 @@ public class attackScript : MonoBehaviour
         if (startDistance >= -20 && startDistance < 20) damBonMinigame = UnityEngine.Random.Range(1f, 2.5f);
         powerDam.gameObject.SetActive(false);
         powerDamSlider.gameObject.SetActive(false);
-        if ((playerScript.dam + damBon) * damBonMinigame <= 0)
+        if ((Int32)((playerScript.dam + damBon) * damBonMinigame) <= 0)
         {
             dam.text = "Промах!";
         }
         else
         {
-            enemyScript.hpEn -= (playerScript.dam + damBon) * damBonMinigame;
-            dam.text = "Вы нанесли " + ((playerScript.dam + damBon) * damBonMinigame).ToString() + " урона! ";
-            clickTextPoolEn[0].StartMotion((playerScript.dam + damBon) * damBonMinigame);
+            enemyScript.hpEn -= (Int32)((playerScript.dam + damBon) * damBonMinigame);
+            dam.text = "Вы нанесли " + ((Int32)((playerScript.dam + damBon) * damBonMinigame)).ToString() + " урона! ";
+            clickTextPoolEn[0].StartMotion((Int32)((playerScript.dam + damBon) * damBonMinigame));
             sound.PlayOneShot(damS);
         }
         
@@ -415,10 +416,30 @@ public class attackScript : MonoBehaviour
         attack.gameObject.SetActive(false);
         hill.gameObject.SetActive(false);
         leaveBt.gameObject.SetActive(false);
+        //хренозащита
+        powerDam.gameObject.SetActive(true);
+        powerDamSlider.gameObject.SetActive(true);
+        speedMove = 350 + UnityEngine.Random.Range(0, 15) + (15 * xpK);
+        isClickFight = false;
+        startDistance = -250;
+        fightMiniGameBt.gameObject.SetActive(true);
+        while (startDistance <= 250 && isClickFight == false)
+        {
+            yield return new WaitForSeconds(0.0000001f);
+            startDistance += speedMove * Time.deltaTime;
+            powerDamSlider.gameObject.transform.localPosition = new Vector2(startDistance, 0);
+        }
+        fightMiniGameBt.gameObject.SetActive(false);
+        damBonMinigame = (int)startDistance;
         yield return new WaitForSeconds(0.5f);
-        sound.PlayOneShot(damS);
+        if ((startDistance >= -250 && startDistance < -150) || (startDistance >= 150)) damBonMinigame = UnityEngine.Random.Range(1.5f, 2f);
+        if ((startDistance >= -150 && startDistance < -80) || (startDistance >= 80 && startDistance < 150)) damBonMinigame = UnityEngine.Random.Range(0.9f, 1.4f);
+        if ((startDistance >= -80 && startDistance < -20) || (startDistance >= 20 && startDistance < 80)) damBonMinigame = UnityEngine.Random.Range(0.8f, 0.9f);
+        if (startDistance >= -20 && startDistance < 20) damBonMinigame = UnityEngine.Random.Range(0.3f, 0.7f);
+        powerDam.gameObject.SetActive(false);
+        powerDamSlider.gameObject.SetActive(false);
         damBon = UnityEngine.Random.Range(-5, 5);
-        enemyScript.damEn = (enemyScript.damag * enemyScript.lvlEn) + damBon;
+        enemyScript.damEn = (Int32)(((enemyScript.damag * enemyScript.lvlEn) + damBon)*damBonMinigame);
         if (enemyScript.damEn <= 0)
         {
             enemyScript.damEn = 0;
@@ -429,6 +450,7 @@ public class attackScript : MonoBehaviour
         playerScript.hp -= enemyScript.damEn;
         clickTextPool[0].StartMotion(enemyScript.damEn); 
         dam.text = "Враг нанес " + (enemyScript.damEn).ToString() + " урона!";
+        sound.PlayOneShot(damS);
         }
         attack.GetComponentInChildren<Image>().sprite = butFig;
         etFig = 1;
