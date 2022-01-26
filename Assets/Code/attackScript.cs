@@ -5,8 +5,8 @@ using UnityEngine.UI;
 using System;
 public class attackScript : MonoBehaviour
 {
-    public Button hill, attack, exit, shopHil, shopDam, shopArm, leaveBt, fightMiniGameBt;
-    public static bool inShop = false, isLeave, isClickFight;
+    public Button hill, attack, exit, shopHil, shopDam, shopArm, leaveBt, fightMiniGameBt, pauseResumeBt, pauseStopBt;
+    public static bool inShop = false, isLeave, isClickFight, paused;
     public static int etFig = 1, damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK, Score, costDam, costHill, costArm, leaveCount;
     public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar, powerDam, powerDamSlider;
     public Text dam, GGname, namEn, hpBarVal, EnhpBarVal, xpBarVal, hilkaVal, lvlVal,lvlValNext, damVal, moneyVal, ScoreText, costDamText, costArmText, costHillText;
@@ -24,6 +24,9 @@ public class attackScript : MonoBehaviour
     private moveText[] clickTextDam = new moveText[10];
     private void Start()
     {
+        paused = true;
+        pauseResumeBt.gameObject.SetActive(false);
+        pauseStopBt.gameObject.SetActive(true);
         fightMiniGameBt.gameObject.SetActive(false);
         powerDam.gameObject.SetActive(false);
         powerDamSlider.gameObject.SetActive(false);
@@ -104,8 +107,8 @@ public class attackScript : MonoBehaviour
         playerScript.dam = (10 * playerScript.lvl) + playerScript.damBonus + playerScript.damWea;
         enhpBar.fillAmount = hpEnfl / enemyScript.hpEnmax;
         hpBar.fillAmount = hpFl / playerScript.hpMax;
-        EnhpBarVal.text = enemyScript.hpEn.ToString() + "hp";
-        hpBarVal.text = playerScript.hp.ToString() + " hp";
+        EnhpBarVal.text = enemyScript.hpEn.ToString();
+        hpBarVal.text = playerScript.hp.ToString();
         moneyVal.text = playerScript.money.ToString();
         hilkaVal.text = playerScript.hilka.ToString();
         lvlVal.text = playerScript.lvl.ToString();
@@ -117,6 +120,20 @@ public class attackScript : MonoBehaviour
         costHillText.text = costHill.ToString();
         costDamText.text = costDam.ToString();
         costArmText.text = costArm.ToString();
+        //пауза
+        if (paused)
+        {
+            Time.timeScale = 0;
+            pauseResumeBt.gameObject.SetActive(true);
+            pauseStopBt.gameObject.SetActive(false);
+        }
+        else
+        {
+            Time.timeScale = 1;
+            pauseStopBt.gameObject.SetActive(true);
+            pauseResumeBt.gameObject.SetActive(false);
+        }
+        //проверка магаза
         if (inShop == false)
         {
             shopHil.gameObject.SetActive(false);
@@ -133,13 +150,16 @@ public class attackScript : MonoBehaviour
             else shopArm.gameObject.SetActive(false);
         }
     }
-    public void clickExitGame()
+    public void clickExitGame() //выход из игры
     {
         Application.Quit();
     }
-   
-   
-    public void onClick() {
+    public void OnClickPause() //нажатие на паузу
+    {
+        paused = !paused;
+    }
+
+    public void onClick() { //ход игры
         damBon = UnityEngine.Random.Range(-5, 5);
         
         switch (etFig) //шаги битвы
@@ -297,6 +317,7 @@ public class attackScript : MonoBehaviour
         enhpBarShab.gameObject.SetActive(true);
         leaveBt.gameObject.SetActive(false);
         attack.gameObject.SetActive(false);
+        hill.gameObject.SetActive(false);
         powerDam.gameObject.SetActive(true);
         powerDamSlider.gameObject.SetActive(true);
         speedMove = 300 + UnityEngine.Random.Range(0, 15) + (15*xpK);
@@ -338,6 +359,7 @@ public class attackScript : MonoBehaviour
         }
         else
         {
+            dam.text += "Готовься получить по ж*пе!";
             attack.gameObject.SetActive(false);
             hill.gameObject.SetActive(false);
             yield return new WaitForSeconds(1f);
@@ -416,6 +438,7 @@ public class attackScript : MonoBehaviour
         attack.gameObject.SetActive(false);
         hill.gameObject.SetActive(false);
         leaveBt.gameObject.SetActive(false);
+        yield return new WaitForSeconds(1f);
         //хренозащита
         powerDam.gameObject.SetActive(true);
         powerDamSlider.gameObject.SetActive(true);
@@ -466,11 +489,6 @@ public class attackScript : MonoBehaviour
             hill.gameObject.SetActive(false);
         }
     }
-   
-        
-        
-        
-   
     public IEnumerator RandomEnent() //выбор рандомного противника (события)
     {
         shopHil.gameObject.SetActive(false);
