@@ -10,7 +10,7 @@ public class attackScript : MonoBehaviour
     public Button hill, attack, exit, shopHil, shopDam, shopArm, leaveBt, fightMiniGameBt, pauseResumeBt, pauseStopBt;
     public static bool inShop = false, isLeave, isClickFight, paused;
     public static int etFig = 1, damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK, Score, costDam, costHill, costArm, leaveCount;
-    public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar, powerDam, powerDamSlider;
+    public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar, powerDam, powerDamSlider, backGround;
     public Text dam, GGname, namEn, hpBarVal, EnhpBarVal, xpBarVal, hilkaVal, lvlVal,lvlValNext, damVal, moneyVal, ScoreText, costDamText, costArmText, costHillText;
     public Sprite im1, im2, im3, imCur, im4, im5, im6, im7, im8, im9, im10, shop, dead, butFig, butHil, butCon, clear;
     public Vector2 direction;
@@ -182,6 +182,7 @@ public class attackScript : MonoBehaviour
 
                 if (enemyScript.item == false)
                 {
+                    backGround.gameObject.transform.localPosition = new Vector2(960, 0);
                     leaveBt.gameObject.SetActive(true);
                     enhpBarShab.gameObject.SetActive(true);
                     dam.text = "ѕриготовьс€ к битве со следующим противником! ";
@@ -197,9 +198,11 @@ public class attackScript : MonoBehaviour
                 }
                 else if (enemyScript.item == true)
                 {
+                    backGround.gameObject.transform.localPosition = new Vector2(960, 0);
                     hill.gameObject.SetActive(false);
                     randBon = UnityEngine.Random.Range(1, 10);
                 }
+                enCur.GetComponent<Animation>().Play("deadRev");
                 switch (enNumb)
                 {
                     case 3:
@@ -383,7 +386,6 @@ public class attackScript : MonoBehaviour
             attack.gameObject.SetActive(false);
             leaveBt.gameObject.SetActive(false);
             yield return new WaitForSeconds(1.0f);
-            attack.gameObject.SetActive(true);
             randMoney = UnityEngine.Random.Range((-4 * xpK), (5 * xpK));
             moneyBon = (5 * xpK) + randMoney + enemyScript.lvlEn;
             enhpBarShab.gameObject.SetActive(false);
@@ -427,15 +429,16 @@ public class attackScript : MonoBehaviour
             attack.gameObject.SetActive(false);
             leaveBt.gameObject.SetActive(false);
             yield return new WaitForSeconds(1.0f);
-            attack.gameObject.SetActive(true);
             enhpBarShab.gameObject.SetActive(false);
             yield return new WaitForSeconds(0.0001f);
             attack.GetComponentInChildren<Image>().sprite = butCon;
             enCur.color = new Color(255, 255, 255, 255);
             dam.text = "¬ы успешно убежали!";
             enCur.sprite = clear;
-
         }
+        backGround.GetComponent<Animation>().Play("newEnemy");
+        yield return new WaitForSeconds(2.0f);
+        attack.gameObject.SetActive(true);
     }
     public IEnumerator Defense() //прин€тие удара
     {
