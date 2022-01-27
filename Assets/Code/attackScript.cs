@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEngine.Rendering.PostProcessing;
 public class attackScript : MonoBehaviour
 {
+    public PostProcessVolume chB;
     public Button hill, attack, exit, shopHil, shopDam, shopArm, leaveBt, fightMiniGameBt, pauseResumeBt, pauseStopBt;
     public static bool inShop = false, isLeave, isClickFight, paused;
     public static int etFig = 1, damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK, Score, costDam, costHill, costArm, leaveCount;
@@ -24,6 +26,7 @@ public class attackScript : MonoBehaviour
     private moveText[] clickTextDam = new moveText[10];
     private void Start()
     {
+        chB.enabled = true;
         paused = true;
         pauseResumeBt.gameObject.SetActive(false);
         pauseStopBt.gameObject.SetActive(true);
@@ -126,12 +129,14 @@ public class attackScript : MonoBehaviour
             Time.timeScale = 0;
             pauseResumeBt.gameObject.SetActive(true);
             pauseStopBt.gameObject.SetActive(false);
+            chB.enabled = true;
         }
         else
         {
             Time.timeScale = 1;
             pauseStopBt.gameObject.SetActive(true);
             pauseResumeBt.gameObject.SetActive(false);
+            chB.enabled = false;
         }
         //проверка магаза
         if (inShop == false)
