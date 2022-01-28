@@ -7,12 +7,12 @@ using UnityEngine.Rendering.PostProcessing;
 public class attackScript : MonoBehaviour
 {
     public PostProcessVolume chB;
-    public Button hill, attack, exit, shopHil, shopDam, shopArm, leaveBt, fightMiniGameBt, pauseResumeBt, pauseStopBt;
+    public Button hill, attack, continueBt, exit, shopHil, shopDam, shopArm, leaveBt, fightMiniGameBt, pauseResumeBt, pauseStopBt;
     public static bool inShop = false, isLeave, isClickFight, paused;
     public static int etFig = 1, damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK, Score, costDam, costHill, costArm, leaveCount;
     public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar, powerDam, powerDamSlider, backGround;
     public Text dam, GGname, namEn, hpBarVal, EnhpBarVal, xpBarVal, hilkaVal, lvlVal,lvlValNext, damVal, moneyVal, ScoreText, costDamText, costArmText, costHillText;
-    public Sprite im1, im2, im3, imCur, im4, im5, im6, im7, im8, im9, im10, shop, dead, butFig, butHil, butCon, clear;
+    public Sprite im1, im2, im3, imCur, im4, im5, im6, im7, im8, im9, im10, shop, dead, butFig, butHil, clear;
     public Vector2 direction;
     public AudioSource sound;
     public AudioClip damS, deadS, coinS;
@@ -26,6 +26,7 @@ public class attackScript : MonoBehaviour
     private moveText[] clickTextDam = new moveText[10];
     private void Start()
     {
+        continueBt.gameObject.SetActive(false);
         chB.enabled = true;
         paused = true;
         pauseResumeBt.gameObject.SetActive(false);
@@ -176,76 +177,7 @@ public class attackScript : MonoBehaviour
                 StartCoroutine(Attack());
                 break;
             case 2: //выбор следующего события (врага)
-                    inShop = false;
-                    StartCoroutine(RandomEnent());
-                    prevEn = enNumb;
-
-                if (enemyScript.item == false)
-                {
-                    backGround.gameObject.transform.localPosition = new Vector2(960, 0);
-                    leaveBt.gameObject.SetActive(true);
-                    enhpBarShab.gameObject.SetActive(true);
-                    dam.text = "Приготовься к битве со следующим противником! ";
-                    attack.GetComponentInChildren<Image>().sprite = butCon;
-                    if (playerScript.hilka > 0) //проверка хилок
-                    {
-                        hill.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        hill.gameObject.SetActive(false);
-                    }      
-                }
-                else if (enemyScript.item == true)
-                {
-                    backGround.gameObject.transform.localPosition = new Vector2(960, 0);
-                    hill.gameObject.SetActive(false);
-                    randBon = UnityEngine.Random.Range(1, 10);
-                }
-                enCur.GetComponent<Animation>().Play("deadRev");
-                switch (enNumb)
-                {
-                    case 3:
-                        hill.gameObject.SetActive(false);
-                        playerScript.damWea += randBon;
-                        dam.text = "Ты нашёл новый кинжал! (+" + randBon.ToString() + " урона)";
-                        playerScript.dam = (10 * playerScript.lvl) + playerScript.damBonus + playerScript.damWea;
-                        clickTextDam[0].StartMotionXp(randBon);
-                        etFig = 2;
-                        break;
-                    case 4:
-                        hill.gameObject.SetActive(false);
-                        playerScript.armor += randBon;
-                        playerScript.hp += randBon;
-                        dam.text = "Ты нашёл кусочек кожи! (+" + randBon.ToString() + " защиты)";
-                        clickTextPool[0].StartMotionHp(randBon);
-                        etFig = 2;
-                        break;
-                    case 5:
-                        hill.gameObject.SetActive(false);
-                        playerScript.hilka += 1;
-                        dam.text = "Ты нашёл пузырёк!";
-                        clickTextHilka[0].StartMotionXp(1); 
-                        etFig = 2;
-                        break;
-                    case 7:
-                        hill.gameObject.SetActive(false);
-                        dam.text = "Ты встретил торговца! Его предложения ниже.";
-                        inShop = true;
-                        etFig = 2;
-                        break;
-                    case 10:
-                        hill.gameObject.SetActive(false);
-                        playerScript.hp = playerScript.hpMax;
-                        dam.text = "Ты обнаружил место силы! Твоё здоровье восполнено до максимума.";
-                        etFig = 2;
-                        break;
-                    default:
-                        attack.GetComponentInChildren<Image>().sprite = butFig; 
-                        enNumb = 2;
-                        etFig = 1;
-                        break;
-                }
+                
                 break;
             default:
                 break;
@@ -320,6 +252,95 @@ public class attackScript : MonoBehaviour
     {
         isClickFight = true;
     }
+    public void OnClickContinue()
+    {
+        StartCoroutine(ContinCor());
+    }
+    public IEnumerator ContinCor()
+    {
+        continueBt.gameObject.SetActive(false);
+        backGround.GetComponent<Animation>().Play("newEnemy");
+        namEn.text = "";
+        yield return new WaitForSeconds(2.0f);
+        attack.gameObject.SetActive(false);
+        inShop = false;
+        yield return new WaitForSeconds(0.5f);
+        StartCoroutine(RandomEnent());
+        prevEn = enNumb;
+        
+        backGround.gameObject.transform.localPosition = new Vector2(960, 0);
+        if (enemyScript.item == false)
+        {
+            backGround.gameObject.transform.localPosition = new Vector2(960, 0);
+            leaveBt.gameObject.SetActive(true);
+            enhpBarShab.gameObject.SetActive(true);
+            attack.gameObject.SetActive(true);
+
+            //тут что-то надо
+            dam.text = "Приготовься к битве со следующим противником! ";
+            if (playerScript.hilka > 0) //проверка хилок
+            {
+                hill.gameObject.SetActive(true);
+            }
+            else
+            {
+                hill.gameObject.SetActive(false);
+            }
+        }
+        else if (enemyScript.item == true)
+        {
+            backGround.gameObject.transform.localPosition = new Vector2(960, 0);
+            hill.gameObject.SetActive(false);
+            attack.gameObject.SetActive(false);
+            continueBt.gameObject.SetActive(true);
+            randBon = UnityEngine.Random.Range(1, 10);
+        }
+        enCur.GetComponent<Animation>().Play("deadRev");
+        switch (enNumb)
+        {
+            case 3:
+                hill.gameObject.SetActive(false);
+                playerScript.damWea += randBon;
+                dam.text = "Ты нашёл новый кинжал! (+" + randBon.ToString() + " урона)";
+                playerScript.dam = (10 * playerScript.lvl) + playerScript.damBonus + playerScript.damWea;
+                clickTextDam[0].StartMotionXp(randBon);
+                etFig = 2;
+                break;
+            case 4:
+                hill.gameObject.SetActive(false);
+                playerScript.armor += randBon;
+                playerScript.hp += randBon;
+                dam.text = "Ты нашёл кусочек кожи! (+" + randBon.ToString() + " защиты)";
+                clickTextPool[0].StartMotionHp(randBon);
+                etFig = 2;
+                break;
+            case 5:
+                hill.gameObject.SetActive(false);
+                playerScript.hilka += 1;
+                dam.text = "Ты нашёл пузырёк!";
+                clickTextHilka[0].StartMotionXp(1);
+                etFig = 2;
+                break;
+            case 7:
+                hill.gameObject.SetActive(false);
+                dam.text = "Ты встретил торговца! Его предложения ниже.";
+                inShop = true;
+                etFig = 2;
+                break;
+            case 10:
+                hill.gameObject.SetActive(false);
+                playerScript.hp = playerScript.hpMax;
+                dam.text = "Ты обнаружил место силы! Твоё здоровье восполнено до максимума.";
+                etFig = 2;
+                break;
+            default:
+                attack.GetComponentInChildren<Image>().sprite = butFig;
+                enNumb = 2;
+                etFig = 1;
+                break;
+        }
+
+    }
     public IEnumerator Attack() //атака 
     {
         enhpBarShab.gameObject.SetActive(true);
@@ -392,7 +413,7 @@ public class attackScript : MonoBehaviour
             yield return new WaitForSeconds(0.0001f);
             xpBon = xpK * 5 + enemyScript.lvlEn * 2;
             Score += (xpK * 5 + enemyScript.lvlEn * 2);
-            attack.GetComponentInChildren<Image>().sprite = butCon;
+            //тут что-то изменить
             playerScript.xp += xpBon;
             playerScript.money += moneyBon;
             clickTextMoney[0].StartMotionXp(moneyBon);
@@ -431,14 +452,13 @@ public class attackScript : MonoBehaviour
             yield return new WaitForSeconds(1.0f);
             enhpBarShab.gameObject.SetActive(false);
             yield return new WaitForSeconds(0.0001f);
-            attack.GetComponentInChildren<Image>().sprite = butCon;
+            //тут что-то изменить
             enCur.color = new Color(255, 255, 255, 255);
             dam.text = "Вы успешно убежали!";
             enCur.sprite = clear;
         }
-        backGround.GetComponent<Animation>().Play("newEnemy");
-        yield return new WaitForSeconds(2.0f);
-        attack.gameObject.SetActive(true);
+        attack.gameObject.SetActive(false);
+        continueBt.gameObject.SetActive(true);
     }
     public IEnumerator Defense() //принятие удара
     {
