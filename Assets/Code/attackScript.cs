@@ -10,9 +10,10 @@ public class attackScript : MonoBehaviour
     public Button hill, attack, continueBt, exit, shopHil, shopDam, shopArm, leaveBt, fightMiniGameBt, pauseResumeBt, pauseStopBt;
     public static bool inShop = false, isLeave, isClickFight, paused;
     public static int etFig = 1, damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK, Score, costDam, costHill, costArm, leaveCount;
-    public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar, powerDam, powerDamSlider, backGround;
+    public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar, powerDam, powerDamSlider, backGround, shopPlace;
     public Text dam, GGname, namEn, hpBarVal, EnhpBarVal, xpBarVal, hilkaVal, lvlVal,lvlValNext, damVal, moneyVal, ScoreText, costDamText, costArmText, costHillText;
-    public Sprite im1, im2, im3, imCur, im4, im5, im6, im7, im8, im9, im10, shop, dead, butFig, butHil, clear;
+    public Sprite shop, dead, butFig, butHil, clear;
+    public Sprite im1, im2, im3, imCur, im4, im5, im6, im7, im8, im9, im10, imShop;
     public Vector2 direction;
     public AudioSource sound;
     public AudioClip damS, deadS, coinS;
@@ -26,6 +27,7 @@ public class attackScript : MonoBehaviour
     private moveText[] clickTextDam = new moveText[10];
     private void Start()
     {
+        shopPlace.gameObject.SetActive(false);
         continueBt.gameObject.SetActive(false);
         chB.enabled = true;
         paused = true;
@@ -142,12 +144,14 @@ public class attackScript : MonoBehaviour
         //проверка магаза
         if (inShop == false)
         {
+            shopPlace.gameObject.SetActive(false);
             shopHil.gameObject.SetActive(false);
             shopArm.gameObject.SetActive(false);
             shopDam.gameObject.SetActive(false);
         }
         if (inShop == true)
         {
+            shopPlace.gameObject.SetActive(true);
             if (playerScript.money > costHill) shopHil.gameObject.SetActive(true);
             else shopHil.gameObject.SetActive(false);
             if (playerScript.money > costDam) shopDam.gameObject.SetActive(true);
@@ -293,6 +297,7 @@ public class attackScript : MonoBehaviour
             backGround.gameObject.transform.localPosition = new Vector2(960, 0);
             hill.gameObject.SetActive(false);
             attack.gameObject.SetActive(false);
+            if (inShop == true) shopPlace.GetComponent<Animation>().Play("deadRev");
             continueBt.gameObject.SetActive(true);
             randBon = UnityEngine.Random.Range(1, 10);
         }
@@ -622,7 +627,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 enemyScript.lvlEn = 5;
                 namEn.text = "Торговец";
-                enCur.sprite = im8;
+                enCur.sprite = imShop;
                 enemyScript.item = true;
                 inShop = true;
                 break;
@@ -634,7 +639,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.hpEnmax = 40 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Крот (" + enemyScript.lvlEn.ToString() + " lvl)";
-                enCur.sprite = im7;
+                enCur.sprite = im8;
                 enemyScript.item = false;
                 break;
             case 9:
@@ -645,13 +650,13 @@ public class attackScript : MonoBehaviour
                 enemyScript.hpEnmax = 50 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Голубь (" + enemyScript.lvlEn.ToString() + " lvl)";
-                enCur.sprite = im8;
+                enCur.sprite = im9;
                 enemyScript.item = false;
                 break;
             case 10:
                 enemyScript.lvlEn = 0;
                 namEn.text = "Место силы";
-                enCur.sprite = im5;
+                enCur.sprite = im10;
                 enemyScript.item = true;
                 break;
             case 11:
