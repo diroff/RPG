@@ -259,11 +259,14 @@ public class attackScript : MonoBehaviour
     public IEnumerator ContinCor()
     {
         continueBt.gameObject.SetActive(false);
+        inShop = false;
+        hill.gameObject.SetActive(false);
+        leaveBt.gameObject.SetActive(false);
+        if (enemyScript.item == true) enCur.GetComponent<Animation>().Play("dead");
         backGround.GetComponent<Animation>().Play("newEnemy");
         namEn.text = "";
         yield return new WaitForSeconds(2.0f);
         attack.gameObject.SetActive(false);
-        inShop = false;
         yield return new WaitForSeconds(0.5f);
         StartCoroutine(RandomEnent());
         prevEn = enNumb;
@@ -275,8 +278,6 @@ public class attackScript : MonoBehaviour
             leaveBt.gameObject.SetActive(true);
             enhpBarShab.gameObject.SetActive(true);
             attack.gameObject.SetActive(true);
-
-            //тут что-то надо
             dam.text = "Приготовься к битве со следующим противником! ";
             if (playerScript.hilka > 0) //проверка хилок
             {
@@ -420,7 +421,8 @@ public class attackScript : MonoBehaviour
             enCur.color = new Color(255, 255, 255, 255);
             dam.text = $"Противник уничтожен! Вы получили {xpBon} опыта и {moneyBon} монет.";
             enCur.sprite = dead;
-                if (playerScript.xp >= playerScript.lvlNext)
+            continueBt.gameObject.SetActive(true);
+            if (playerScript.xp >= playerScript.lvlNext)
                 {
                 damLast = (playerScript.dam);
                 hpLast = (int)playerScript.hp;
@@ -444,21 +446,11 @@ public class attackScript : MonoBehaviour
         else //когда гг сбежал
         {
             enCur.GetComponent<Animation>().Play("dead");
-            namEn.text = "";
-            enemyScript.hpEn = 0;
-            hill.gameObject.SetActive(false);
-            attack.gameObject.SetActive(false);
-            leaveBt.gameObject.SetActive(false);
-            yield return new WaitForSeconds(1.0f);
-            enhpBarShab.gameObject.SetActive(false);
-            yield return new WaitForSeconds(0.0001f);
-            //тут что-то изменить
-            enCur.color = new Color(255, 255, 255, 255);
             dam.text = "Вы успешно убежали!";
-            enCur.sprite = clear;
+            enhpBarShab.gameObject.SetActive(false);
+            StartCoroutine(ContinCor()); 
         }
         attack.gameObject.SetActive(false);
-        continueBt.gameObject.SetActive(true);
     }
     public IEnumerator Defense() //принятие удара
     {
