@@ -7,7 +7,6 @@ public class Score : MonoBehaviour
     public Text s2core, bestScore;
     public int PromScore = 0, PromScore2 = 0;
     public string PromScoreStr, PromScoreStr2;
-
     void Start()
     {
         s2core.text = "¬аш счЄт:" + attackScript.Score + " очков";

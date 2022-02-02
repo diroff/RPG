@@ -9,7 +9,7 @@ public class attackScript : MonoBehaviour
     public PostProcessVolume chB;
     public Button hill, attack, continueBt, exit, shopHil, shopDam, shopArm, leaveBt, fightMiniGameBt, pauseResumeBt, pauseStopBt;
     public static bool inShop = false, isLeave, isClickFight, paused;
-    public static int etFig = 1, damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK, Score, costDam, costHill, costArm, leaveCount;
+    public static int damBon = 0, GameCount = 0, prevEn, randBon, randMoney, xpBon, moneyBon, damLast, hpLast, leaveCh, hpEnBon, xpK, Score, costDam, costHill, costArm, leaveCount;
     public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar, powerDam, powerDamSlider, backGround, shopPlace;
     public Text dam, GGname, namEn, hpBarVal, EnhpBarVal, xpBarVal, hilkaVal, lvlVal,lvlValNext, damVal, moneyVal, ScoreText, costDamText, costArmText, costHillText;
     public Sprite shop, dead, butFig, butHil, clear;
@@ -27,19 +27,28 @@ public class attackScript : MonoBehaviour
     private moveText[] clickTextDam = new moveText[10];
     private void Start()
     {
+        StopAllCoroutines();
+        //кнопочки и буллы
+        isClickFight = false;
+        paused = false;
+        chB.enabled = false;
+        inShop = false;
+        attack.gameObject.SetActive(true);
+        pauseResumeBt.gameObject.SetActive(true);
         shopPlace.gameObject.SetActive(false);
         continueBt.gameObject.SetActive(false);
-        chB.enabled = true;
-        paused = true;
-        pauseResumeBt.gameObject.SetActive(false);
-        pauseStopBt.gameObject.SetActive(true);
+        pauseStopBt.gameObject.SetActive(false);
         fightMiniGameBt.gameObject.SetActive(false);
         powerDam.gameObject.SetActive(false);
         powerDamSlider.gameObject.SetActive(false);
+        shopHil.gameObject.SetActive(false);
+        shopArm.gameObject.SetActive(false);
+        shopDam.gameObject.SetActive(false);
+        //обнуление важных переменных
         costArm = 20; costDam = 25; costHill = 10;
         Score = 0;
         xpK = 1;
-        enemyScript.damag = 3;
+        playerScript.lvl = 1;
         playerScript.hp = 20;
         playerScript.lvl = 1;
         playerScript.lvlNext = 10;
@@ -47,31 +56,20 @@ public class attackScript : MonoBehaviour
         playerScript.damWea = playerScript.armor = playerScript.money = playerScript.damBonus = playerScript.hilka = attackScript.GameCount = 0;
         playerScript.xp = 0;
         playerScript.hpMax = (20 * playerScript.lvl);
+        enemyScript.damag = 3;
         enemyScript.hpEnmax = 10;
         enemyScript.hpEn = enemyScript.hpEnmax;
         enemyScript.lvlEn = 1;
         enemyScript.damEn = (enemyScript.damag * enemyScript.lvlEn);
+        enemyScript.hpEn = enemyScript.hpEnmax;
         leaveCount = 25 + playerScript.lvl;
-        inShop = false;
-        leaveBt.gameObject.SetActive(false);
-        shopHil.gameObject.SetActive(false);
-        shopArm.gameObject.SetActive(false);
-        shopDam.gameObject.SetActive(false);
         GGname.text = Name.ggName;
-        if (inShop == false)
-        {
-            shopHil.gameObject.SetActive(false);
-            shopArm.gameObject.SetActive(false);
-            shopDam.gameObject.SetActive(false);
-        }
-        playerScript.lvl = 1;
         enCur.sprite = im1;
         namEn.text = "Комар " + enemyScript.lvlEn.ToString() + " lvl";
-        enemyScript.hpEn = enemyScript.hpEnmax;
         enNumb = 1;
-        StartCoroutine(Defense());
-        dam.text = "Готовься получить по ж*пе!";
-        if (playerScript.hilka > 0) //проверка хилок
+        dam.text = "";
+        //проверка хилок
+        if (playerScript.hilka > 0) 
         {
             hill.gameObject.SetActive(true);
         }
@@ -79,6 +77,7 @@ public class attackScript : MonoBehaviour
         {
             hill.gameObject.SetActive(false);
         }
+        //старт анимационной фигни
         for (int i = 0; i<clickTextPool.Length; i++)
         {
             clickTextPool[i] = Instantiate(damPrefab, clickParent.transform).GetComponent<moveText>();
@@ -160,6 +159,7 @@ public class attackScript : MonoBehaviour
             else shopArm.gameObject.SetActive(false);
         }
     }
+    //функции для кнопок
     public void clickExitGame() //выход из игры
     {
         Application.Quit();
@@ -168,27 +168,10 @@ public class attackScript : MonoBehaviour
     {
         paused = !paused;
     }
-
     public void onClick() { //ход игры
         damBon = UnityEngine.Random.Range(-5, 5);
-        
-        switch (etFig) //шаги битвы
-        {
-            case 0: //получение урона
-                StartCoroutine(Defense());
-                break;
-            case 1: //атака
-                StartCoroutine(Attack());
-                break;
-            case 2: //выбор следующего события (врага)
-                
-                break;
-            default:
-                break;
-        }
+        StartCoroutine(Attack());
     }
-    // События
-   
     public void BuyClickHill() //покупка хилки
     {
         if (playerScript.money >= costHill)
@@ -231,7 +214,6 @@ public class attackScript : MonoBehaviour
             isLeave = true;
             enNumb = prevEn;
             StartCoroutine(enemyDead());
-            etFig = 2;
             leaveCount--;
         }
         else
@@ -240,7 +222,6 @@ public class attackScript : MonoBehaviour
             StartCoroutine(Defense());
         }
     }
-
     public void onClickRegen() //хилл
     {
         attackScript.hpLast = (int)playerScript.hp;
@@ -250,17 +231,17 @@ public class attackScript : MonoBehaviour
         dam.text = "Вы восстановили своё здоровье";
         if (enemyScript.hpEn >= 0)
         StartCoroutine(Defense());
- 
     }
-    public void AttackMiniGameClick()
+    public void AttackMiniGameClick() //атака в миниигре 
     {
         isClickFight = true;
     }
-    public void OnClickContinue()
+    public void OnClickContinue() //продолжить
     {
         StartCoroutine(ContinCor());
     }
-    public IEnumerator ContinCor()
+    //коррутины
+    public IEnumerator ContinCor() //продолжить
     {
         continueBt.gameObject.SetActive(false);
         inShop = false;
@@ -274,7 +255,6 @@ public class attackScript : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         StartCoroutine(RandomEnent());
         prevEn = enNumb;
-        
         backGround.gameObject.transform.localPosition = new Vector2(960, 0);
         if (enemyScript.item == false)
         {
@@ -310,7 +290,6 @@ public class attackScript : MonoBehaviour
                 dam.text = "Ты нашёл новый кинжал! (+" + randBon.ToString() + " урона)";
                 playerScript.dam = (10 * playerScript.lvl) + playerScript.damBonus + playerScript.damWea;
                 clickTextDam[0].StartMotionXp(randBon);
-                etFig = 2;
                 break;
             case 4:
                 hill.gameObject.SetActive(false);
@@ -318,34 +297,28 @@ public class attackScript : MonoBehaviour
                 playerScript.hp += randBon;
                 dam.text = "Ты нашёл кусочек кожи! (+" + randBon.ToString() + " защиты)";
                 clickTextPool[0].StartMotionHp(randBon);
-                etFig = 2;
                 break;
             case 5:
                 hill.gameObject.SetActive(false);
                 playerScript.hilka += 1;
                 dam.text = "Ты нашёл пузырёк!";
                 clickTextHilka[0].StartMotionXp(1);
-                etFig = 2;
                 break;
             case 7:
                 hill.gameObject.SetActive(false);
                 dam.text = "Ты встретил торговца! Его предложения ниже.";
                 inShop = true;
-                etFig = 2;
                 break;
             case 10:
                 hill.gameObject.SetActive(false);
                 playerScript.hp = playerScript.hpMax;
                 dam.text = "Ты обнаружил место силы! Твоё здоровье восполнено до максимума.";
-                etFig = 2;
                 break;
             default:
                 attack.GetComponentInChildren<Image>().sprite = butFig;
                 enNumb = 2;
-                etFig = 1;
                 break;
         }
-
     }
     public IEnumerator Attack() //атака 
     {
@@ -385,12 +358,10 @@ public class attackScript : MonoBehaviour
             clickTextPoolEn[0].StartMotion((Int32)((playerScript.dam + damBon) * damBonMinigame));
             sound.PlayOneShot(damS);
         }
-        
         if (enemyScript.hpEn <= 0)
         {
             isLeave = false;
             StartCoroutine(enemyDead());
-            etFig = 2;
         }
         else
         {
@@ -401,7 +372,6 @@ public class attackScript : MonoBehaviour
             StartCoroutine(Defense());
         }
     }
- 
     public IEnumerator enemyDead() //событие смерти врага
     {
         if (isLeave == false) //когда враг умер
@@ -419,7 +389,6 @@ public class attackScript : MonoBehaviour
             yield return new WaitForSeconds(0.0001f);
             xpBon = xpK * 5 + enemyScript.lvlEn * 2;
             Score += (xpK * 5 + enemyScript.lvlEn * 2);
-            //тут что-то изменить
             playerScript.xp += xpBon;
             playerScript.money += moneyBon;
             clickTextMoney[0].StartMotionXp(moneyBon);
@@ -438,10 +407,9 @@ public class attackScript : MonoBehaviour
                 playerScript.lvlNext = playerScript.lvl * (25 * playerScript.lvl);
                 playerScript.hpMax = (playerScript.lvl * 20) + playerScript.armor;
                 playerScript.hp = playerScript.hpMax;
-                playerScript.dam = (10 * playerScript.lvl) + playerScript.damBonus;
-                                   
-                    clickTextPool[0].StartMotionHp(playerScript.hpMax - hpLast);
-                    clickTextDam[0].StartMotionXp(playerScript.dam - damLast);
+                playerScript.dam = (10 * playerScript.lvl) + playerScript.damBonus;              
+                clickTextPool[0].StartMotionHp(playerScript.hpMax - hpLast);
+                clickTextDam[0].StartMotionXp(playerScript.dam - damLast);
                 }
                 else
                 {
@@ -501,7 +469,6 @@ public class attackScript : MonoBehaviour
         sound.PlayOneShot(damS);
         }
         attack.GetComponentInChildren<Image>().sprite = butFig;
-        etFig = 1;
         yield return new WaitForSeconds(1f);
         attack.gameObject.SetActive(true);
         leaveBt.gameObject.SetActive(true);
@@ -571,8 +538,6 @@ public class attackScript : MonoBehaviour
                 namEn.text = "Комар (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im1;
                 enemyScript.item = false;
-                
-
                 break;
             case 2:
                 if (playerScript.lvl >= 2)
@@ -592,7 +557,6 @@ public class attackScript : MonoBehaviour
                 enCur.sprite = im2;
                 enemyScript.item = false;
                 break;
-
             case 3:
                 enemyScript.lvlEn = 0;
                 namEn.text = "Кинжал";

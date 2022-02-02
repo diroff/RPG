@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class Exit : MonoBehaviour
 {
-
-
     public void StartGame()
     {
         SceneManager.LoadScene(1);
