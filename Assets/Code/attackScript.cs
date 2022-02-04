@@ -13,7 +13,7 @@ public class attackScript : MonoBehaviour
     public Image enCur, hpBar, enhpBar, hpBarShab, enhpBarShab, xpBar, powerDam, powerDamSlider, backGround, shopPlace;
     public Text dam, GGname, namEn, hpBarVal, EnhpBarVal, xpBarVal, hilkaVal, lvlVal,lvlValNext, damVal, moneyVal, ScoreText, costDamText, costArmText, costHillText;
     public Sprite shop, dead, butFig, butHil, clear;
-    public Sprite im1, im2, im3, imCur, im4, im5, im6, im7, im8, im9, im10, imShop;
+    public Sprite im1, im2, im3, imCur, im4, im5, im6, im7, im8, im9, im10,im11, im12, im13, im14, im15, imShop;
     public Vector2 direction;
     public AudioSource sound;
     public AudioClip damS, deadS, coinS;
@@ -48,6 +48,7 @@ public class attackScript : MonoBehaviour
         costArm = 20; costDam = 25; costHill = 10;
         Score = 0;
         xpK = 1;
+        enCur.transform.localScale = new Vector3(0.5f, 0.5f, 1);
         playerScript.lvl = 1;
         playerScript.hp = 20;
         playerScript.lvl = 1;
@@ -289,6 +290,7 @@ public class attackScript : MonoBehaviour
                 playerScript.damWea += randBon;
                 dam.text = "Ты нашёл новый кинжал! (+" + randBon.ToString() + " урона)";
                 playerScript.dam = (10 * playerScript.lvl) + playerScript.damBonus + playerScript.damWea;
+                enCur.transform.localScale = new Vector3(0.7f, 0.7f, 1);
                 clickTextDam[0].StartMotionXp(randBon);
                 break;
             case 4:
@@ -296,23 +298,27 @@ public class attackScript : MonoBehaviour
                 playerScript.armor += randBon;
                 playerScript.hp += randBon;
                 dam.text = "Ты нашёл кусочек кожи! (+" + randBon.ToString() + " защиты)";
+                enCur.transform.localScale = new Vector3(0.7f, 0.7f, 1);
                 clickTextPool[0].StartMotionHp(randBon);
                 break;
             case 5:
                 hill.gameObject.SetActive(false);
                 playerScript.hilka += 1;
                 dam.text = "Ты нашёл пузырёк!";
+                enCur.transform.localScale = new Vector3(0.7f, 0.7f, 1);
                 clickTextHilka[0].StartMotionXp(1);
                 break;
             case 7:
                 hill.gameObject.SetActive(false);
                 dam.text = "Ты встретил торговца! Его предложения ниже.";
+                enCur.transform.localScale = new Vector3(0.8f, 0.8f, 1);
                 inShop = true;
                 break;
             case 10:
                 hill.gameObject.SetActive(false);
                 playerScript.hp = playerScript.hpMax;
                 dam.text = "Ты обнаружил место силы! Твоё здоровье восполнено до максимума.";
+                enCur.transform.localScale = new Vector3(0.7f, 0.7f, 1);
                 break;
             default:
                 attack.GetComponentInChildren<Image>().sprite = butFig;
@@ -537,6 +543,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Комар (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im1;
+                enCur.transform.localScale = new Vector3(0.5f, 0.5f, 1);
                 enemyScript.item = false;
                 break;
             case 2:
@@ -553,7 +560,8 @@ public class attackScript : MonoBehaviour
                 enemyScript.damag = 4;
                 enemyScript.hpEnmax = 15 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
-                namEn.text = "Жук (" + enemyScript.lvlEn.ToString() + " lvl)";
+                namEn.text = "Павук (" + enemyScript.lvlEn.ToString() + " lvl)";
+                enCur.transform.localScale = new Vector3(0.7f, 0.7f, 1);
                 enCur.sprite = im2;
                 enemyScript.item = false;
                 break;
@@ -584,6 +592,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Жаба (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im6;
+                enCur.transform.localScale = new Vector3(0.7f, 0.7f, 1);
                 enemyScript.item = false;
                 break;
             case 7:
@@ -632,6 +641,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Сокол (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im9;
+                enCur.transform.localScale = new Vector3(0.7f, 0.7f, 1);
                 enemyScript.item = false;
                 break;
             case 12:
@@ -643,6 +653,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.hpEnmax = 70 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Волк (" + enemyScript.lvlEn.ToString() + " lvl)";
+                enCur.transform.localScale = new Vector3(0.7f, 0.7f, 1);
                 enCur.sprite = im9;
                 enemyScript.item = false;
                 break;
@@ -655,6 +666,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Рысь (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im9;
+                enCur.transform.localScale = new Vector3(0.7f, 0.7f, 1);
                 enemyScript.item = false;
                 break;
             case 14:
@@ -666,6 +678,7 @@ public class attackScript : MonoBehaviour
                 enemyScript.hpEn = enemyScript.hpEnmax;
                 namEn.text = "Тигр (" + enemyScript.lvlEn.ToString() + " lvl)";
                 enCur.sprite = im9;
+                enCur.transform.localScale = new Vector3(0.9f, 0.9f, 1);
                 enemyScript.item = false;
                 break;
             case 15:
@@ -676,7 +689,8 @@ public class attackScript : MonoBehaviour
                 enemyScript.hpEnmax = 200 * enemyScript.lvlEn;
                 enemyScript.hpEn = enemyScript.hpEnmax; 
                 namEn.text = "Лев (" + enemyScript.lvlEn.ToString() + " lvl)";
-                enCur.sprite = im9;
+                enCur.sprite = im10;
+                enCur.transform.localScale = new Vector3(0.8f, 0.8f, 1);
                 enemyScript.item = false;
                 break;
             default:

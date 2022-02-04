@@ -1741,6 +1741,11 @@ MonoBehaviour:
   im8: {fileID: 0}
   im9: {fileID: 21300000, guid: c0df8c18c9f92f8499a640dc3c5603b9, type: 3}
   im10: {fileID: 21300000, guid: 2c9724431c1c68240ac7fb9072f6d898, type: 3}
+  im11: {fileID: 0}
+  im12: {fileID: 0}
+  im13: {fileID: 0}
+  im14: {fileID: 0}
+  im15: {fileID: 21300000, guid: e3ed5317ffe483e4caa44acded7f6d6d, type: 3}
   imShop: {fileID: 21300000, guid: 25fe38cd44675a44f92d25b98eb38b42, type: 3}
   direction: {x: 0, y: 0}
   sound: {fileID: 519420037}
@@ -4687,14 +4692,14 @@ RectTransform:
   m_GameObject: {fileID: 1554127413}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 1}
   m_Children: []
   m_Father: {fileID: 233442173}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -2029.9999, y: 188.00003}
+  m_AnchoredPosition: {x: -2029.9999, y: 168}
   m_SizeDelta: {x: 500, y: 500}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1554127415
@@ -4717,7 +4722,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c0df8c18c9f92f8499a640dc3c5603b9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e3ed5317ffe483e4caa44acded7f6d6d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
